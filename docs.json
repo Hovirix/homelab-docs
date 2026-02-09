@@ -1,6 +1,6 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "theme": "aspen",
+  "theme": "mint",
   "name": "Hovirix Homelab Docs",
   "colors": {
     "primary": "#16A34A",
@@ -14,9 +14,9 @@
   },
   "favicon": "/favicon.svg",
   "navigation": {
-    "tabs": [
+    "anchors": [
       {
-        "tab": "Overview",
+        "anchor": "Overview",
         "icon": "house",
         "groups": [
           {
@@ -40,7 +40,7 @@
         ]
       },
       {
-        "tab": "Networking",
+        "anchor": "Networking",
         "icon": "network-wired",
         "groups": [
           {
@@ -50,7 +50,8 @@
               "networking/vlans",
               "networking/reverse-proxy",
               "networking/firewall",
-              "networking/vpn"
+              "networking/cloudflare-tunnel",
+              "networking/tailscale"
             ]
           }
         ]
