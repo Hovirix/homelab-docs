@@ -1,102 +1,32 @@
 ---
 title: "Inventory"
-description: "All services and containers running in the homelab"
+description: "What's currently running in the homelab"
 ---
-
-## Overview
-
-All services run as Podman containers on Fedora CoreOS, managed via Quadlet (systemd units).
 
 ## Services
 
-### Photos & Documents
+| Service | Description | Auth | Access |
+|---------|-------------|------|--------|
+| Immich | Photo & video backup | Authentik | External |
+| Paperless-ngx | Document management | Authentik | External |
+| Linkwarden | Bookmark manager | Authentik | External |
+| Vaultwarden | Password manager | Built-in | External |
+| n8n | Workflow automation | Built-in | External |
+| Authentik | Identity provider | - | External |
+| Grafana | Monitoring dashboards | Authentik | External |
+| Caddy | Reverse proxy | - | Internal |
 
-<Columns cols={2}>
-  <Card title="Immich" icon="image" href="https://immich.app">
-    Self-hosted photo and video backup solution. Google Photos alternative.
-  </Card>
-  <Card title="Paperless-ngx" icon="file-text" href="https://docs.paperless-ngx.com">
-    Document management system with OCR. Scan, index, and archive documents.
-  </Card>
-</Columns>
+## Databases
 
-### Productivity
-
-<Columns cols={2}>
-  <Card title="Linkwarden" icon="bookmark" href="https://linkwarden.app">
-    Bookmark manager and archive. Save and organize links.
-  </Card>
-  <Card title="Vaultwarden" icon="lock" href="https://github.com/dani-garcia/vaultwarden">
-    Bitwarden-compatible password manager. Self-hosted secrets management.
-  </Card>
-</Columns>
-
-### Automation & Identity
-
-<Columns cols={2}>
-  <Card title="n8n" icon="workflow" href="https://n8n.io">
-    Workflow automation platform. Connect apps and automate tasks.
-  </Card>
-  <Card title="Authentik" icon="key" href="https://goauthentik.io">
-    Identity provider for SSO. OIDC/SAML authentication for all services.
-  </Card>
-</Columns>
-
-### Infrastructure
-
-<Columns cols={2}>
-  <Card title="Caddy" icon="arrows-split-up-and-left" href="https://caddyserver.com">
-    Reverse proxy with automatic HTTPS. Routes traffic to containers.
-  </Card>
-  <Card title="Grafana" icon="chart-line" href="https://grafana.com">
-    Monitoring and observability dashboards. Visualize metrics and logs.
-  </Card>
-</Columns>
-
-### Databases
-
-| Service | Purpose |
+| Service | Used by |
 |---------|---------|
-| PostgreSQL | Primary database for Immich, Authentik, Paperless, etc. |
-| Valkey (Redis) | Caching and session storage |
+| PostgreSQL | Immich, Authentik, Paperless-ngx, Linkwarden, n8n, Grafana |
+| Valkey | Paperless-ngx |
 
-## Service Matrix
+## Infrastructure
 
-| Service | Auth | External Access | Database |
-|---------|------|-----------------|----------|
-| Immich | Authentik (OIDC) | CF Tunnel | PostgreSQL |
-| Paperless-ngx | Authentik (OIDC) | CF Tunnel | PostgreSQL |
-| Linkwarden | Authentik (OIDC) | CF Tunnel | PostgreSQL |
-| Vaultwarden | Built-in | CF Tunnel | SQLite |
-| n8n | Authentik (OIDC) | CF Tunnel | PostgreSQL |
-| Authentik | - | CF Tunnel | PostgreSQL |
-| Caddy | - | Local | - |
-| Grafana | Authentik (OIDC) | CF Tunnel | - |
-
-## Deployment
-
-All containers are defined as Podman Quadlets in `/etc/containers/systemd/`.
-
-```bash
-# List running containers
-podman ps
-
-# Check service status
-systemctl status <service>.container
-
-# View logs
-journalctl -u <service>.container
-```
-
-<Tip>
-Quadlet files are stored in a Git repo and deployed via SCP. See [Architecture](/overview/architecture) for the full deployment workflow.
-</Tip>
-
-## Adding New Services
-
-1. Create a `.container` Quadlet file
-2. Add to Git repo
-3. Deploy via SCP to `/etc/containers/systemd/`
-4. Run `systemctl daemon-reload && systemctl start <service>.container`
-5. Configure Caddy route
-6. (Optional) Set up Authentik application for SSO
+| Service | Role |
+|---------|------|
+| cloudflared | Cloudflare Tunnel |
+| AdGuard Home | DNS (on OpenWrt) |
+| Tailscale | Admin SSH access |
